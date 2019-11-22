@@ -31,6 +31,8 @@ namespace ChemNotation
 
             InitializeComponent();
 
+            ErrorLogger.LogMessage("WelcomeForm initialised.", typeof(WelcomeForm));
+
             RefreshLabel();
         }
 
@@ -55,6 +57,7 @@ namespace ChemNotation
 
         private void AboutButton_Click(object sender, EventArgs e)
         {
+            ErrorLogger.LogMessage("AboutForm opened.", typeof(WelcomeForm));
             Program.AForm.ShowDialog();
         }
         #endregion
@@ -74,6 +77,7 @@ namespace ChemNotation
 
         private void ExitButton_Click(object sender, EventArgs e)
         {
+            ErrorLogger.LogMessage("Application exited.", typeof(WelcomeForm));
             Application.Exit();
         }
         #endregion
@@ -88,6 +92,7 @@ namespace ChemNotation
         private void NewFileButton_Click(object sender, EventArgs e)
         {
             this.Hide();
+            ErrorLogger.LogMessage("DrawingForm opened.", typeof(WelcomeForm));
             Program.DForm.ShowDialog();
             this.Close();
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,10 +8,13 @@ using SkiaSharp;
 
 namespace ChemNotation.DiagramObjects
 {
-    public class Diagram
+    public class Diagram : IDisposable
     {
-        // Image size
-        private static readonly SKImageInfo Metadata = new SKImageInfo(640, 480);
+        // Debug logger
+        private static readonly ErrorLogger Log = new ErrorLogger(typeof(Diagram));
+
+        // Image size, created during runtime.
+        private SKImageInfo? Metadata;
 
         // Drawing surface. Used to draw the objects to the screen.
         private SKSurface _DiagramSurface;
@@ -21,7 +25,7 @@ namespace ChemNotation.DiagramObjects
                 if (_DiagramSurface == null)
                 {
                     // Initialises a blank white canvas.
-                    _DiagramSurface = SKSurface.Create(Metadata);
+                    _DiagramSurface = SKSurface.Create(Metadata.Value);
                     _DiagramSurface.Canvas.Clear(SKColors.White);
                 }
 
@@ -35,8 +39,10 @@ namespace ChemNotation.DiagramObjects
         /// <summary>
         /// Creates a new blank diagram.
         /// </summary>
-        public Diagram()
+        public Diagram(int width, int height)
         {
+            Metadata = new SKImageInfo(width, height);
+            Log.LogMessageGeneral("New diagram created.");
             DiagramObjects = new List<DiagramObject>();
         }
 
@@ -56,7 +62,11 @@ namespace ChemNotation.DiagramObjects
         /// <returns>The resulting <code>SKSurface</code></returns>
         public SKSurface UpdateView(bool clearScreen)
         {
-            if (clearScreen) DiagramSurface.Canvas.Clear(SKColors.White);
+            if (clearScreen)
+            {
+                Log.LogMessageGeneral("Diagram cleared pre-update.");
+                DiagramSurface.Canvas.Clear(SKColors.White);
+            }
 
             foreach (DiagramObject obj in DiagramObjects)
             {
@@ -65,6 +75,15 @@ namespace ChemNotation.DiagramObjects
             }
 
             return DiagramSurface;
+        }
+
+        /// <summary>
+        /// Clears all the drawn objects in the diagram.
+        /// </summary>
+        public void ResetDiagram()
+        {
+            Log.LogMessageInfo("Diagram reset.");
+            Dispose();
         }
 
         /// <summary>
@@ -94,9 +113,67 @@ namespace ChemNotation.DiagramObjects
             }
         }
 
+        /// <summary>
+        /// Gets the object that the mouse is intersecting.
+        /// </summary>
+        /// <param name="selectedObjectID">Object currently selected</param>
+        /// <param name="mouseLocation">Current location of mouse</param>
+        /// <returns></returns>
+        public int FindMouseIntersect(int? selectedObjectID, Point mouseLocation)
+        {
+            int SID = -1;
+            if (selectedObjectID != null) SID = selectedObjectID.Value;
+
+            foreach (DiagramObject item in DiagramObjects)
+            {
+                try
+                {
+                    if (item.IsMouseIntersect(mouseLocation) && item.DiagramID != SID) return item.DiagramID;
+                } catch (NotImplementedException e)
+                {
+                    // Mouse checking code not implemented on object. This is a serious issue.
+                    ErrorLogger.ShowErrorMessageBox(e);
+                    continue;
+                }
+            }
+
+            return -1;
+        }
+
+        // Get newest free object ID.
+        private int _NextFreeID = 0;
+        public int NextFreeID()
+        {
+            return _NextFreeID++;
+        }
+
+        public void Dispose()
+        {
+            try
+            {
+                for (int i = 0; i < DiagramObjects.Count; i++)
+                {
+                    DiagramObjects[i] = null;
+                }
+
+                DiagramObjects.Clear();
+                DiagramObjects.TrimExcess();
+
+                _DiagramSurface.Dispose();
+                _DiagramSurface = null;
+            } catch (NullReferenceException e)
+            {
+                Log.LogMessageError("Nullref caught.", e);
+            } catch (Exception e)
+            {
+                ErrorLogger.ShowErrorMessageBox(e);
+            }
+        }
+
         ~Diagram()
         {
-            _DiagramSurface.Dispose();
+            Dispose();
+            Log.LogMessageInfo("Diagram instance destroyed.");
         }
     }
 }

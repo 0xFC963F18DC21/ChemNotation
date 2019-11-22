@@ -65,6 +65,8 @@
     <Compile Include="AboutForm.Designer.cs">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="DiagramObjects\Atom.cs" />
+    <Compile Include="DiagramObjects\Bond.cs" />
     <Compile Include="DiagramObjects\Diagram.cs" />
     <Compile Include="DiagramObjects\DiagramObject.cs" />
     <Compile Include="DrawingForm.cs">
@@ -73,6 +75,7 @@
     <Compile Include="DrawingForm.Designer.cs">
       <DependentUpon>DrawingForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ErrorLogger.cs" />
     <Compile Include="WelcomeForm.cs">
       <SubType>Form</SubType>
     </Compile>

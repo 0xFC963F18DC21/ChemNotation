@@ -52,7 +52,7 @@
             this.NewFileButton.Location = new System.Drawing.Point(12, 66);
             this.NewFileButton.Name = "NewFileButton";
             this.NewFileButton.Size = new System.Drawing.Size(197, 23);
-            this.NewFileButton.TabIndex = 1;
+            this.NewFileButton.TabIndex = 0;
             this.NewFileButton.Text = "New File";
             this.NewFileButton.UseVisualStyleBackColor = true;
             this.NewFileButton.Click += new System.EventHandler(this.NewFileButton_Click);
@@ -64,7 +64,7 @@
             this.ExitButton.Location = new System.Drawing.Point(431, 66);
             this.ExitButton.Name = "ExitButton";
             this.ExitButton.Size = new System.Drawing.Size(197, 23);
-            this.ExitButton.TabIndex = 1;
+            this.ExitButton.TabIndex = 2;
             this.ExitButton.Text = "Exit";
             this.ExitButton.UseVisualStyleBackColor = true;
             this.ExitButton.Click += new System.EventHandler(this.ExitButton_Click);
