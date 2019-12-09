@@ -71,7 +71,7 @@ namespace ChemNotation.DiagramObjects
                 case ObjectTypeID.Atom:
                     return new Atom();
                 case ObjectTypeID.Bond:
-                    throw new NotImplementedException("Bond type not implemented yet.");
+                    return new Bond();
                 case ObjectTypeID.Line:
                     throw new NotImplementedException("Line type not implemented yet.");
                 case ObjectTypeID.Text:

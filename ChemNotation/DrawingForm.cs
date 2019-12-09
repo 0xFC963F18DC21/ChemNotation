@@ -91,20 +91,85 @@ namespace ChemNotation
             MouseEventArgs args = (MouseEventArgs)e;
             Point clickLocation = args.Location;
 
-            //SKPaint style = new SKPaint();
-            //style.Color = SKColors.Black;
+            // SKPaint style = new SKPaint();
+            // style.Color = SKColors.Black;
 
-            //int testSquareWidth = 8;
+            // int testSquareWidth = 8;
 
-            //CurrentDiagram.DiagramSurface.Canvas.DrawRect(
-            //    clickLocation.X - (testSquareWidth / 2),
-            //    clickLocation.Y - (testSquareWidth / 2),
-            //    testSquareWidth, testSquareWidth,
-            //    style);
+            // CurrentDiagram.DiagramSurface.Canvas.DrawRect(
+            //     clickLocation.X - (testSquareWidth / 2),
+            //     clickLocation.Y - (testSquareWidth / 2),
+            //     testSquareWidth, testSquareWidth,
+            //     style);
 
             try
             {
-                CurrentDiagram.AddDiagramObject(new Atom("C", clickLocation.X, clickLocation.Y));
+                // CurrentDiagram.AddDiagramObject(new Atom("C", clickLocation.X, clickLocation.Y));
+                switch (SelectedTool)
+                {
+                    case DiagramAction.Select:
+                        break;
+                    case DiagramAction.PlaceAtom:
+                        break;
+                    case DiagramAction.PlaceAtomCarbon:
+                        CurrentDiagram.AddDiagramObject(new Atom("C", clickLocation.X, clickLocation.Y));
+                        break;
+                    case DiagramAction.PlaceAtomNitrogen:
+                        CurrentDiagram.AddDiagramObject(new Atom("N", clickLocation.X, clickLocation.Y, new SKColor(0, 128, 0)));
+                        break;
+                    case DiagramAction.PlaceAtomOxygen:
+                        CurrentDiagram.AddDiagramObject(new Atom("O", clickLocation.X, clickLocation.Y, new SKColor(255, 0, 0)));
+                        break;
+                    case DiagramAction.PlaceAtomHydrogen:
+                        CurrentDiagram.AddDiagramObject(new Atom("H", clickLocation.X, clickLocation.Y, new SKColor(128, 128, 128)));
+                        break;
+                    case DiagramAction.PlaceSingleBond:
+                        break;
+                    case DiagramAction.PlaceDoubleBond:
+                        break;
+                    case DiagramAction.PlaceTripleBond:
+                        break;
+                    case DiagramAction.PlaceAromaticBond:
+                        break;
+                    case DiagramAction.PlaceBondEnd:
+                        break;
+                    case DiagramAction.PlaceLineStart:
+                        break;
+                    case DiagramAction.PlaceLineEnd:
+                        break;
+                    case DiagramAction.PlaceCurveStart:
+                        break;
+                    case DiagramAction.PlaceCurveEnd:
+                        break;
+                    case DiagramAction.PlaceStraightArrowStart:
+                        break;
+                    case DiagramAction.PlaceStraightArrowEnd:
+                        break;
+                    case DiagramAction.PlaceCurvedArrowStart:
+                        break;
+                    case DiagramAction.PlaceCurvedArrowPoint:
+                        break;
+                    case DiagramAction.ChargeIncrease:
+                        break;
+                    case DiagramAction.ChargeDecrease:
+                        break;
+                    case DiagramAction.PlaceTextGeneric:
+                        break;
+                    case DiagramAction.PlaceTextLabel:
+                        break;
+                    case DiagramAction.PlaceParentheses:
+                        break;
+                    case DiagramAction.PlaceBrackets:
+                        break;
+                    case DiagramAction.PlaceBraces:
+                        break;
+                    case DiagramAction.PlaceMiscellaneous:
+                        break;
+                    case DiagramAction.EditObjectHandle:
+                        break;
+                    default:
+                        break;
+                }
 
                 UpdateScreen(true);
             } catch (Exception err)
@@ -120,7 +185,7 @@ namespace ChemNotation
         {
             Select,
             PlaceAtom, PlaceAtomCarbon, PlaceAtomNitrogen, PlaceAtomOxygen, PlaceAtomHydrogen, 
-            PlaceSingleBond, PlaceDoubleBond, PlaceTripleBond, PlaceAromaticBond,
+            PlaceSingleBond, PlaceDoubleBond, PlaceTripleBond, PlaceAromaticBond, PlaceBondEnd,
             PlaceLineStart, PlaceLineEnd,
             PlaceCurveStart, PlaceCurveEnd,
             PlaceStraightArrowStart, PlaceStraightArrowEnd,

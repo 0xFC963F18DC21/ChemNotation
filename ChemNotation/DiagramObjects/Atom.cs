@@ -29,7 +29,7 @@ namespace ChemNotation.DiagramObjects
         public SKColor Colour { get; private set; }
         public int Charge { get; private set; }
 
-        public Atom() : this("C", 0f, 0f, "Arial", 12, null, 0) { }
+        public Atom() : this("C", 0f, 0f, null, "Arial", 12, 0) { }
 
         /// <summary>
         /// Creates a new atom object. Default parameters used if arguments omitted.
@@ -40,7 +40,7 @@ namespace ChemNotation.DiagramObjects
         /// <param name="fontFamily">Font family of text</param>
         /// <param name="fontSize">Font size of text</param>
         /// <param name="colour">Font colour</param>
-        public Atom(string symbol = "C", float x = 0, float y = 0, string fontFamily = "Arial", float fontSize = 12, SKColor? colour = null, int charge = 0)
+        public Atom(string symbol = "C", float x = 0, float y = 0, SKColor? colour = null, string fontFamily = "Arial", float fontSize = 12, int charge = 0)
         {
             DiagramID = Program.DForm.CurrentDiagram.NextFreeID();
             X = x;
@@ -64,6 +64,7 @@ namespace ChemNotation.DiagramObjects
             };
 
             diagram.DiagramSurface.Canvas.DrawText(Symbol, X, Y + FontSize / 2, paint);
+            paint.Dispose();
         }
 
         public override void EditInternalParameters(Dictionary<string, object> parameters)
@@ -117,16 +118,25 @@ namespace ChemNotation.DiagramObjects
 
         public override Dictionary<string, object> GetInternalParameters()
         {
-            return new Dictionary<string, object>
+            try
             {
-                { "X", X },
-                { "Y", Y },
-                { "Symbol", Symbol },
-                { "FontFamily", FontFamily },
-                { "FontSize", FontSize },
-                { "Colour", Colour },
-                { "Charge", Charge }
-            };
+                return new Dictionary<string, object>
+                {
+                    { "X", X },
+                    { "Y", Y },
+                    { "Symbol", Symbol },
+                    { "FontFamily", FontFamily },
+                    { "FontSize", FontSize },
+                    { "Colour", Colour },
+                    { "Charge", Charge }
+                };
+            }
+            catch (Exception e)
+            {
+                // Uncaught misc. error. Please log.
+                ErrorLogger.ShowErrorMessageBox(e);
+                return null;
+            }
         }
 
         public override bool IsMouseIntersect(Point location)

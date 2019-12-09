@@ -1,0 +1,72 @@
+﻿[
+  {
+    "Name": "Hydrogen",
+    "Symbol": "H",
+    "Red": 128,
+    "Green": 128,
+    "Blue": 128
+  },
+  {
+    "Name": "Carbon",
+    "Symbol": "C",
+    "Red": 0,
+    "Green": 0,
+    "Blue": 0
+  },
+  {
+    "Name": "Oxygen",
+    "Symbol": "O",
+    "Red": 255,
+    "Green": 0,
+    "Blue": 0
+  },
+  {
+    "Name": "Nitrogen",
+    "Symbol": "N",
+    "Red": 0,
+    "Green": 128,
+    "Blue": 0
+  },
+  {
+    "Name": "Fluorine",
+    "Symbol": "F",
+    "Red": 128,
+    "Green": 128,
+    "Blue": 0
+  },
+  {
+    "Name": "Chlorine",
+    "Symbol": "Cl",
+    "Red": 0,
+    "Green": 255,
+    "Blue": 0
+  },
+  {
+    "Name": "Bromine",
+    "Symbol": "Br",
+    "Red": 185,
+    "Green": 60,
+    "Blue": 0
+  },
+  {
+    "Name": "Iodine",
+    "Symbol": "I",
+    "Red": 128,
+    "Green": 128,
+    "Blue": 0
+  },
+  {
+    "Name": "Sodium",
+    "Symbol": "Na",
+    "Red": 210,
+    "Green": 140,
+    "Blue": 0
+  },
+  {
+    "Name": "-DUMMY-",
+    "Symbol": "-DUMMY-",
+    "Red": -1,
+    "Green": -1,
+    "Blue": -1
+  }
+]

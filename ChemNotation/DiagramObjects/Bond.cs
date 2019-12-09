@@ -75,26 +75,87 @@ namespace ChemNotation.DiagramObjects
             double a1 = angle + Math.PI / 2;
             double a2 = angle - Math.PI / 2;
 
-            // float singlePoint = 0;
+            float dPointX1 = X1 + (float)(4 * Math.Cos(angle));
+            float dPointY1 = Y1 + (float)(4 * Math.Sin(angle));
+            float dPointX2 = X2 + (float)(4 * Math.Cos(angle));
+            float dPointY2 = Y2 + (float)(4 * Math.Sin(angle));
 
-            switch (TypeOfBond)
+            float dPointX3 = X1 - (float)(4 * Math.Cos(angle));
+            float dPointY3 = Y1 - (float)(4 * Math.Sin(angle));
+            float dPointX4 = X2 - (float)(4 * Math.Cos(angle));
+            float dPointY4 = Y2 - (float)(4 * Math.Sin(angle));
+
+            if (BondSubtype == BondStyle.Wedged || BondSubtype == BondStyle.Dashed)
             {
-                case BondType.Single:
-                    path.MoveTo(X1, Y1);
-                    path.LineTo(X2, Y2);
-                    break;
-                case BondType.Double:
+                SKPoint[] points = new SKPoint[]
+                {
+                    new SKPoint() { X = X1, Y = Y1 },
+                    new SKPoint() { X = dPointX3, Y = dPointY3 },
+                    new SKPoint() { X = dPointX4, Y = dPointY4 }
+                };
 
-                    break;
-                case BondType.Triple:
-                    break;
-                case BondType.Aromatic:
-                    break;
-                default:
-                    break;
+                switch (BondSubtype)
+                {
+                    case BondStyle.Wedged:
+                        paint.Style = SKPaintStyle.StrokeAndFill;
+                        break;
+                    case BondStyle.Dashed:
+                        paint.Style = SKPaintStyle.StrokeAndFill;
+                        paint.PathEffect = SKPathEffect.CreateDash(new float[] { 9f, 3f }, 0);
+                        break;
+                    default:
+                        break;
+                }
+
+                drawSurface.DrawPoints(SKPointMode.Polygon, points, paint);
             }
+            else
+            {
+                switch (TypeOfBond)
+                {
+                    case BondType.Single:
+                        path.MoveTo(X1, Y1);
+                        path.LineTo(X2, Y2);
+                        break;
+                    case BondType.Double:
+                        path.MoveTo(dPointX1, dPointY1);
+                        path.LineTo(dPointX2, dPointX2);
+                        path.MoveTo(dPointX3, dPointY3);
+                        path.LineTo(dPointX4, dPointX4);
+                        break;
+                    case BondType.Triple:
+                        path.MoveTo(X1, Y1);
+                        path.LineTo(X2, Y2);
+                        path.MoveTo(dPointX1, dPointY1);
+                        path.LineTo(dPointX2, dPointX2);
+                        path.MoveTo(dPointX3, dPointY3);
+                        path.LineTo(dPointX4, dPointX4);
+                        break;
+                    case BondType.Aromatic:
+                        SKPaint paintDash = new SKPaint
+                        {
+                            Color = Colour,
+                            IsAntialias = true,
+                            StrokeWidth = Thickness,
+                            StrokeCap = SKStrokeCap.Round,
+                            PathEffect = SKPathEffect.CreateDash(new float[] { 9f, 3f }, 0)
+                        };
 
-            drawSurface.DrawPath(path, paint);
+                        SKPath p2 = new SKPath();
+                        p2.MoveTo(dPointX3, dPointY3);
+                        p2.LineTo(dPointX4, dPointY4);
+
+                        drawSurface.DrawPath(p2, paintDash);
+
+                        path.MoveTo(dPointX1, dPointY1);
+                        path.LineTo(dPointX2, dPointY2);
+                        break;
+                    default:
+                        break;
+                }
+
+                drawSurface.DrawPath(path, paint);
+            }
         }
 
         public override void EditInternalParameters(Dictionary<string, object> parameters)
@@ -156,19 +217,28 @@ namespace ChemNotation.DiagramObjects
 
         public override Dictionary<string, object> GetInternalParameters()
         {
-            return new Dictionary<string, object>
+            try
             {
-                { "X1", X1 },
-                { "Y1", Y1 },
-                { "X2", X2 },
-                { "Y2", Y2 },
-                { "BondType", TypeOfBond },
-                { "Subtype", BondSubtype },
-                { "Thickness", Thickness },
-                { "Colour", Colour },
-                { "AnchorID1", AnchorID1 },
-                { "AnchorID2", AnchorID2 }
-            };
+                return new Dictionary<string, object>
+                {
+                    { "X1", X1 },
+                    { "Y1", Y1 },
+                    { "X2", X2 },
+                    { "Y2", Y2 },
+                    { "BondType", TypeOfBond },
+                    { "Subtype", BondSubtype },
+                    { "Thickness", Thickness },
+                    { "Colour", Colour },
+                    { "AnchorID1", AnchorID1 },
+                    { "AnchorID2", AnchorID2 }
+                };
+            }
+            catch (Exception e)
+            {
+                // If some error occurs, please log.
+                ErrorLogger.ShowErrorMessageBox(e);
+                return null;
+            }
         }
 
         public override bool IsMouseIntersect(Point location)
