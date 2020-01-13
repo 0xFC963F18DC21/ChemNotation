@@ -29,7 +29,7 @@ namespace ChemNotation.DiagramObjects
         public SKColor Colour { get; private set; }
         public int Charge { get; private set; }
 
-        public Atom() : this("C", 0f, 0f, null, "Arial", 12, 0) { }
+        public Atom() : this("C", 0f, 0f, null, "Arial", 16, 0) { }
 
         /// <summary>
         /// Creates a new atom object. Default parameters used if arguments omitted.
@@ -40,7 +40,7 @@ namespace ChemNotation.DiagramObjects
         /// <param name="fontFamily">Font family of text</param>
         /// <param name="fontSize">Font size of text</param>
         /// <param name="colour">Font colour</param>
-        public Atom(string symbol = "C", float x = 0, float y = 0, SKColor? colour = null, string fontFamily = "Arial", float fontSize = 12, int charge = 0)
+        public Atom(string symbol = "C", float x = 0, float y = 0, SKColor? colour = null, string fontFamily = "Arial", float fontSize = 16, int charge = 0)
         {
             DiagramID = Program.DForm.CurrentDiagram.NextFreeID();
             X = x;

@@ -52,14 +52,28 @@
     "Name": "Iodine",
     "Symbol": "I",
     "Red": 128,
-    "Green": 128,
-    "Blue": 0
+    "Green": 0,
+    "Blue": 128
   },
   {
     "Name": "Sodium",
     "Symbol": "Na",
     "Red": 210,
     "Green": 140,
+    "Blue": 0
+  },
+  {
+    "Name": "Lithium",
+    "Symbol": "Li",
+    "Red": 115,
+    "Green": 0,
+    "Blue": 0
+  },
+  {
+    "Name": "Sulphur",
+    "Symbol": "S",
+    "Red": 240,
+    "Green": 200,
     "Blue": 0
   },
   {

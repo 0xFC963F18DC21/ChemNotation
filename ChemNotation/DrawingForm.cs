@@ -25,6 +25,9 @@ namespace ChemNotation
         // Current selected tool.
         private DiagramAction SelectedTool { get; set; }
 
+        // Current diagram object
+        public DiagramObject CurrentObject { get; set; } = null;
+
         public string MessageBoxText {
             set
             {
@@ -110,6 +113,15 @@ namespace ChemNotation
                     case DiagramAction.Select:
                         break;
                     case DiagramAction.PlaceAtom:
+                        var par = CurrentObject.GetInternalParameters();
+
+                        par["X"] = (float)clickLocation.X;
+                        par["Y"] = (float)clickLocation.Y;
+
+                        Atom a = new Atom();
+                        a.EditInternalParameters(par);
+
+                        CurrentDiagram.AddDiagramObject(a);
                         break;
                     case DiagramAction.PlaceAtomCarbon:
                         CurrentDiagram.AddDiagramObject(new Atom("C", clickLocation.X, clickLocation.Y));
@@ -124,14 +136,53 @@ namespace ChemNotation
                         CurrentDiagram.AddDiagramObject(new Atom("H", clickLocation.X, clickLocation.Y, new SKColor(128, 128, 128)));
                         break;
                     case DiagramAction.PlaceSingleBond:
-                        break;
+                        CurrentObject = new Bond(clickLocation.X, clickLocation.Y, 0, 0, 1.5f, null, Bond.BondType.Single);
+                        ToolGroup.Enabled = false;
+                        SelectedTool = DiagramAction.PlaceBondEnd;
+                        return;
                     case DiagramAction.PlaceDoubleBond:
-                        break;
+                        CurrentObject = new Bond(clickLocation.X, clickLocation.Y, 0, 0, 1.5f, null, Bond.BondType.Double);
+                        ToolGroup.Enabled = false;
+                        SelectedTool = DiagramAction.PlaceBondEnd;
+                        return;
                     case DiagramAction.PlaceTripleBond:
-                        break;
+                        CurrentObject = new Bond(clickLocation.X, clickLocation.Y, 0, 0, 1.5f, null, Bond.BondType.Triple);
+                        ToolGroup.Enabled = false;
+                        SelectedTool = DiagramAction.PlaceBondEnd;
+                        return;
                     case DiagramAction.PlaceAromaticBond:
-                        break;
+                        CurrentObject = new Bond(clickLocation.X, clickLocation.Y, 0, 0, 1.5f, null, Bond.BondType.Aromatic);
+                        ToolGroup.Enabled = false;
+                        SelectedTool = DiagramAction.PlaceBondEnd;
+                        return;
                     case DiagramAction.PlaceBondEnd:
+                        if (CurrentObject.ObjectID == DiagramObject.ObjectTypeID.Bond)
+                        {
+                            var parameters = CurrentObject.GetInternalParameters();
+                            parameters["X2"] = (float)clickLocation.X;
+                            parameters["Y2"] = (float)clickLocation.Y;
+                            CurrentObject.EditInternalParameters(parameters);
+
+                            CurrentDiagram.AddDiagramObject(CurrentObject);
+                            ToolGroup.Enabled = true;
+
+                            switch (((Bond)CurrentObject).TypeOfBond)
+                            {
+                                case Bond.BondType.Single:
+                                    SelectedTool = DiagramAction.PlaceSingleBond;
+                                    break;
+                                case Bond.BondType.Double:
+                                    SelectedTool = DiagramAction.PlaceDoubleBond;
+                                    break;
+                                case Bond.BondType.Triple:
+                                    SelectedTool = DiagramAction.PlaceTripleBond;
+                                    break;
+                                case Bond.BondType.Aromatic:
+                                    SelectedTool = DiagramAction.PlaceAromaticBond;
+                                    break;
+                            }
+                            // CurrentObject = null;
+                        }
                         break;
                     case DiagramAction.PlaceLineStart:
                         break;
@@ -221,6 +272,12 @@ namespace ChemNotation
         {
             SelectedTool = DiagramAction.PlaceAtom;
             MessageBoxText = "Atom tool selected.";
+
+            AtomSelectionForm sForm = new AtomSelectionForm();
+            sForm.ShowDialog();
+
+            var par = CurrentObject.GetInternalParameters();
+            MessageBoxText = par["Symbol"] + " selected.";
         }
 
         private void ButtonAtomCarbon_Click(object sender, EventArgs e)

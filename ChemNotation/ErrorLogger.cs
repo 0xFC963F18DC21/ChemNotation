@@ -12,7 +12,7 @@ namespace ChemNotation
     public class ErrorLogger
     {
         // !! Set this to false when releasing. !!
-        private static readonly bool AllowLogging = true;
+        public static bool AllowLogging { get; } = true;
 
         private Type Caller { get; set; }
 

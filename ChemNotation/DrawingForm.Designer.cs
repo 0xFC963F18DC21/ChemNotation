@@ -30,7 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DrawingForm));
             this.DiagramView = new System.Windows.Forms.PictureBox();
-            this.ButtonGroup = new System.Windows.Forms.GroupBox();
+            this.ToolGroup = new System.Windows.Forms.GroupBox();
             this.ButtonAtomHydrogen = new System.Windows.Forms.Button();
             this.ButtonCurve = new System.Windows.Forms.Button();
             this.ButtonObject = new System.Windows.Forms.Button();
@@ -58,7 +58,7 @@
             this.newDiagramToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.DiagramView)).BeginInit();
-            this.ButtonGroup.SuspendLayout();
+            this.ToolGroup.SuspendLayout();
             this.DrawingFormToolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -72,34 +72,34 @@
             this.DiagramView.TabStop = false;
             this.DiagramView.Click += new System.EventHandler(this.DiagramView_Click);
             // 
-            // ButtonGroup
+            // ToolGroup
             // 
-            this.ButtonGroup.Controls.Add(this.ButtonAtomHydrogen);
-            this.ButtonGroup.Controls.Add(this.ButtonCurve);
-            this.ButtonGroup.Controls.Add(this.ButtonObject);
-            this.ButtonGroup.Controls.Add(this.ButtonBraces);
-            this.ButtonGroup.Controls.Add(this.ButtonBrackets);
-            this.ButtonGroup.Controls.Add(this.ButtonParentheses);
-            this.ButtonGroup.Controls.Add(this.ButtonChargeNegative);
-            this.ButtonGroup.Controls.Add(this.ButtonChargePositive);
-            this.ButtonGroup.Controls.Add(this.ButtonOxygen);
-            this.ButtonGroup.Controls.Add(this.ButtonAtom);
-            this.ButtonGroup.Controls.Add(this.ButtonArrowCurved);
-            this.ButtonGroup.Controls.Add(this.ButtonAtomNitrogen);
-            this.ButtonGroup.Controls.Add(this.ButtonArrowStraight);
-            this.ButtonGroup.Controls.Add(this.ButtonLine);
-            this.ButtonGroup.Controls.Add(this.ButtonAtomCarbon);
-            this.ButtonGroup.Controls.Add(this.ButtonBondAromatic);
-            this.ButtonGroup.Controls.Add(this.ButtonBondTriple);
-            this.ButtonGroup.Controls.Add(this.ButtonBondDouble);
-            this.ButtonGroup.Controls.Add(this.ButtonSelect);
-            this.ButtonGroup.Controls.Add(this.ButtonBondSingle);
-            this.ButtonGroup.Location = new System.Drawing.Point(12, 31);
-            this.ButtonGroup.Name = "ButtonGroup";
-            this.ButtonGroup.Size = new System.Drawing.Size(130, 600);
-            this.ButtonGroup.TabIndex = 1;
-            this.ButtonGroup.TabStop = false;
-            this.ButtonGroup.Text = "Tools";
+            this.ToolGroup.Controls.Add(this.ButtonAtomHydrogen);
+            this.ToolGroup.Controls.Add(this.ButtonCurve);
+            this.ToolGroup.Controls.Add(this.ButtonObject);
+            this.ToolGroup.Controls.Add(this.ButtonBraces);
+            this.ToolGroup.Controls.Add(this.ButtonBrackets);
+            this.ToolGroup.Controls.Add(this.ButtonParentheses);
+            this.ToolGroup.Controls.Add(this.ButtonChargeNegative);
+            this.ToolGroup.Controls.Add(this.ButtonChargePositive);
+            this.ToolGroup.Controls.Add(this.ButtonOxygen);
+            this.ToolGroup.Controls.Add(this.ButtonAtom);
+            this.ToolGroup.Controls.Add(this.ButtonArrowCurved);
+            this.ToolGroup.Controls.Add(this.ButtonAtomNitrogen);
+            this.ToolGroup.Controls.Add(this.ButtonArrowStraight);
+            this.ToolGroup.Controls.Add(this.ButtonLine);
+            this.ToolGroup.Controls.Add(this.ButtonAtomCarbon);
+            this.ToolGroup.Controls.Add(this.ButtonBondAromatic);
+            this.ToolGroup.Controls.Add(this.ButtonBondTriple);
+            this.ToolGroup.Controls.Add(this.ButtonBondDouble);
+            this.ToolGroup.Controls.Add(this.ButtonSelect);
+            this.ToolGroup.Controls.Add(this.ButtonBondSingle);
+            this.ToolGroup.Location = new System.Drawing.Point(12, 31);
+            this.ToolGroup.Name = "ToolGroup";
+            this.ToolGroup.Size = new System.Drawing.Size(130, 600);
+            this.ToolGroup.TabIndex = 1;
+            this.ToolGroup.TabStop = false;
+            this.ToolGroup.Text = "Tools";
             // 
             // ButtonAtomHydrogen
             // 
@@ -345,14 +345,14 @@
             // newDiagramToolStripMenuItem
             // 
             this.newDiagramToolStripMenuItem.Name = "newDiagramToolStripMenuItem";
-            this.newDiagramToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.newDiagramToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.newDiagramToolStripMenuItem.Text = "New Diagram";
             this.newDiagramToolStripMenuItem.Click += new System.EventHandler(this.newDiagramToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -364,13 +364,13 @@
             this.Controls.Add(this.DrawingFormToolStrip);
             this.Controls.Add(this.StatusTextBox);
             this.Controls.Add(this.StatusLabel);
-            this.Controls.Add(this.ButtonGroup);
+            this.Controls.Add(this.ToolGroup);
             this.Controls.Add(this.DiagramView);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "DrawingForm";
             this.Text = "ChemNotation - Drawing Window";
             ((System.ComponentModel.ISupportInitialize)(this.DiagramView)).EndInit();
-            this.ButtonGroup.ResumeLayout(false);
+            this.ToolGroup.ResumeLayout(false);
             this.DrawingFormToolStrip.ResumeLayout(false);
             this.DrawingFormToolStrip.PerformLayout();
             this.ResumeLayout(false);
@@ -379,7 +379,7 @@
         }
 
         #endregion
-        private System.Windows.Forms.GroupBox ButtonGroup;
+        private System.Windows.Forms.GroupBox ToolGroup;
         private System.Windows.Forms.Button ButtonAtomNitrogen;
         private System.Windows.Forms.Button ButtonAtomCarbon;
         private System.Windows.Forms.Button ButtonOxygen;

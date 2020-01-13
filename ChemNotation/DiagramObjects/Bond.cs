@@ -40,8 +40,11 @@ namespace ChemNotation.DiagramObjects
         public int AnchorID1 { get; private set; }
         public int AnchorID2 { get; private set; }
 
-        public Bond(float x1 = 0, float y1 = 0, float x2 = 0, float y2 = 0, float thickness = 1.5f, SKColor? colour = null, BondType typeOfBond = BondType.Single, BondStyle subtype = BondStyle.Plain, int anchorID1 = -1, int anchorID2 = -1)
+        public Bond() : this(0, 0) { }
+
+        public Bond(float x1 = 0, float y1 = 0, float x2 = 0, float y2 = 0, float thickness = 4f, SKColor? colour = null, BondType typeOfBond = BondType.Single, BondStyle subtype = BondStyle.Plain, int anchorID1 = -1, int anchorID2 = -1)
         {
+            DiagramID = Program.DForm.CurrentDiagram.NextFreeID();
             X1 = x1;
             Y1 = y1;
             X2 = x2;
@@ -56,34 +59,35 @@ namespace ChemNotation.DiagramObjects
 
         public override void Draw(Diagram diagram)
         {
-            SKCanvas drawSurface = diagram.DiagramSurface.Canvas;
-
             SKPaint paint = new SKPaint
             {
                 Color = Colour,
                 IsAntialias = true,
                 StrokeWidth = Thickness,
-                StrokeCap = SKStrokeCap.Round
+                StrokeCap = SKStrokeCap.Round,
+                Style = SKPaintStyle.Stroke
             };
 
             SKPath path = new SKPath();
 
             double angle = Math.Atan2(Y2 - Y1, X2 - X1);
 
-            if (angle < 0d) angle += Math.PI * 2;
+            //if (angle < 0d) angle += Math.PI * 2;
 
-            double a1 = angle + Math.PI / 2;
-            double a2 = angle - Math.PI / 2;
+            double a1 = angle + (Math.PI / 2);
+            double a2 = angle - (Math.PI / 2);
 
-            float dPointX1 = X1 + (float)(4 * Math.Cos(angle));
-            float dPointY1 = Y1 + (float)(4 * Math.Sin(angle));
-            float dPointX2 = X2 + (float)(4 * Math.Cos(angle));
-            float dPointY2 = Y2 + (float)(4 * Math.Sin(angle));
+            float dPointX1 = X1 + (float)(3 * Math.Cos(a1));
+            float dPointY1 = Y1 + (float)(3 * Math.Sin(a1));
+            float dPointX2 = X2 + (float)(3 * Math.Cos(a1));
+            float dPointY2 = Y2 + (float)(3 * Math.Sin(a1));
 
-            float dPointX3 = X1 - (float)(4 * Math.Cos(angle));
-            float dPointY3 = Y1 - (float)(4 * Math.Sin(angle));
-            float dPointX4 = X2 - (float)(4 * Math.Cos(angle));
-            float dPointY4 = Y2 - (float)(4 * Math.Sin(angle));
+            float dPointX3 = X1 + (float)(3 * Math.Cos(a2));
+            float dPointY3 = Y1 + (float)(3 * Math.Sin(a2));
+            float dPointX4 = X2 + (float)(3 * Math.Cos(a2));
+            float dPointY4 = Y2 + (float)(3 * Math.Sin(a2));
+
+            if (TypeOfBond != BondType.Single) Log.LogMessageGeneral($"({X1}, {Y1}) | ({X2}, {Y2}) || ({dPointX1}, {dPointY1}) | ({dPointX2}, {dPointY2}) | ({dPointX3}, {dPointY3}) | ({dPointX4}, {dPointY4})");
 
             if (BondSubtype == BondStyle.Wedged || BondSubtype == BondStyle.Dashed)
             {
@@ -107,7 +111,7 @@ namespace ChemNotation.DiagramObjects
                         break;
                 }
 
-                drawSurface.DrawPoints(SKPointMode.Polygon, points, paint);
+                diagram.DiagramSurface.Canvas.DrawPoints(SKPointMode.Polygon, points, paint);
             }
             else
             {
@@ -119,17 +123,27 @@ namespace ChemNotation.DiagramObjects
                         break;
                     case BondType.Double:
                         path.MoveTo(dPointX1, dPointY1);
-                        path.LineTo(dPointX2, dPointX2);
-                        path.MoveTo(dPointX3, dPointY3);
-                        path.LineTo(dPointX4, dPointX4);
+                        path.LineTo(dPointX2, dPointY2);
+
+                        SKPath path2 = new SKPath();
+                        path2.MoveTo(dPointX3, dPointY3);
+                        path2.LineTo(dPointX4, dPointY4);
+
+                        diagram.DiagramSurface.Canvas.DrawPath(path2, paint);
                         break;
                     case BondType.Triple:
                         path.MoveTo(X1, Y1);
                         path.LineTo(X2, Y2);
-                        path.MoveTo(dPointX1, dPointY1);
-                        path.LineTo(dPointX2, dPointX2);
-                        path.MoveTo(dPointX3, dPointY3);
-                        path.LineTo(dPointX4, dPointX4);
+
+                        SKPath p2 = new SKPath(), p3 = new SKPath();
+                        p2.MoveTo(dPointX1, dPointY1);
+                        p2.LineTo(dPointX2, dPointY2);
+
+                        p3.MoveTo(dPointX3, dPointY3);
+                        p3.LineTo(dPointX4, dPointY4);
+
+                        diagram.DiagramSurface.Canvas.DrawPath(p2, paint);
+                        diagram.DiagramSurface.Canvas.DrawPath(p3, paint);
                         break;
                     case BondType.Aromatic:
                         SKPaint paintDash = new SKPaint
@@ -138,14 +152,15 @@ namespace ChemNotation.DiagramObjects
                             IsAntialias = true,
                             StrokeWidth = Thickness,
                             StrokeCap = SKStrokeCap.Round,
-                            PathEffect = SKPathEffect.CreateDash(new float[] { 9f, 3f }, 0)
+                            PathEffect = SKPathEffect.CreateDash(new float[] { 9f, 3f }, 0),
+                            Style = SKPaintStyle.Stroke
                         };
 
-                        SKPath p2 = new SKPath();
-                        p2.MoveTo(dPointX3, dPointY3);
-                        p2.LineTo(dPointX4, dPointY4);
+                        SKPath pth2 = new SKPath();
+                        pth2.MoveTo(dPointX3, dPointY3);
+                        pth2.LineTo(dPointX4, dPointY4);
 
-                        drawSurface.DrawPath(p2, paintDash);
+                        diagram.DiagramSurface.Canvas.DrawPath(pth2, paintDash);
 
                         path.MoveTo(dPointX1, dPointY1);
                         path.LineTo(dPointX2, dPointY2);
@@ -154,7 +169,8 @@ namespace ChemNotation.DiagramObjects
                         break;
                 }
 
-                drawSurface.DrawPath(path, paint);
+                //path.Close();
+                diagram.DiagramSurface.Canvas.DrawPath(path, paint);
             }
         }
 

@@ -68,10 +68,35 @@ namespace ChemNotation.DiagramObjects
                 DiagramSurface.Canvas.Clear(SKColors.White);
             }
 
-            foreach (DiagramObject obj in DiagramObjects)
+            IEnumerable<DiagramObject> bonds =
+                from obj in DiagramObjects
+                where obj.ObjectID == DiagramObject.ObjectTypeID.Bond
+                select obj;
+
+            IEnumerable<DiagramObject> lines =
+                from obj in DiagramObjects
+                where obj.ObjectID == DiagramObject.ObjectTypeID.Line
+                select obj;
+
+            IEnumerable<DiagramObject> atoms =
+                from obj in DiagramObjects
+                where obj.ObjectID == DiagramObject.ObjectTypeID.Atom
+                select obj;
+
+            IEnumerable<DiagramObject> texts =
+                from obj in DiagramObjects
+                where obj.ObjectID == DiagramObject.ObjectTypeID.Text
+                select obj;
+
+            IEnumerable<DiagramObject>[] enumerables = { bonds, lines, atoms, texts };
+
+            foreach (IEnumerable<DiagramObject> enumerable in enumerables)
             {
                 // Draw each object from the list.
-                obj.Draw(this);
+                foreach (DiagramObject obj in enumerable)
+                {
+                    obj.Draw(this);
+                }
             }
 
             return DiagramSurface;
@@ -92,6 +117,16 @@ namespace ChemNotation.DiagramObjects
         /// <param name="obj"><code>DiagramObject</code> instance</param>
         public void AddDiagramObject(DiagramObject obj)
         {
+            Log.LogMessageDebug($"Object placed: {obj}");
+            if (ErrorLogger.AllowLogging)
+            {
+                var parameters = obj.GetInternalParameters();
+                foreach (string key in parameters.Keys)
+                {
+                    Log.LogMessageDebug($"{key}: {parameters[key]}");
+                }
+            }
+
             DiagramObjects.Add(obj);
         }
 

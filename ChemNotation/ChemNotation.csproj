@@ -93,10 +93,17 @@
     <Compile Include="AboutForm.Designer.cs">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="AtomSelectionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AtomSelectionForm.Designer.cs">
+      <DependentUpon>AtomSelectionForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="DiagramObjects\Atom.cs" />
     <Compile Include="DiagramObjects\Bond.cs" />
     <Compile Include="DiagramObjects\Diagram.cs" />
     <Compile Include="DiagramObjects\DiagramObject.cs" />
+    <Compile Include="DiagramObjects\Line.cs" />
     <Compile Include="DrawingForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -121,6 +128,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="AboutForm.resx">
       <DependentUpon>AboutForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AtomSelectionForm.resx">
+      <DependentUpon>AtomSelectionForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="DrawingForm.resx">
       <DependentUpon>DrawingForm.cs</DependentUpon>
