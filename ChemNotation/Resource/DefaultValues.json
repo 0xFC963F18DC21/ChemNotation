@@ -77,6 +77,13 @@
     "Blue": 0
   },
   {
+    "Name": "Phosphorus",
+    "Symbol": "P",
+    "Red": 140,
+    "Green": 20,
+    "Blue": 40
+  },
+  {
     "Name": "-DUMMY-",
     "Symbol": "-DUMMY-",
     "Red": -1,

@@ -49,10 +49,23 @@ namespace ChemNotation.DiagramObjects
         public abstract void EditInternalParameters(Dictionary<string, object> parameters);
 
         /// <summary>
+        /// This method allows the passing of values into the values into the diagram object (taken from GetEditableParameters).
+        /// It allows the editing of already-placed objects.
+        /// </summary>
+        /// <param name="parameters">The object's internal parameters.</param>
+        public abstract void ReplaceInternalParameters(Dictionary<string, object> parameters);
+
+        /// <summary>
         /// Gets the current object's parameters.
         /// </summary>
         /// <returns>Dictionary containing the current instance's parameters.</returns>
         public abstract Dictionary<string, object> GetInternalParameters();
+
+        /// <summary>
+        /// Gets an editor-safe version of the object's current parameters.
+        /// </summary>
+        /// <returns>Dictionary containing the current instance's editable parameters.</returns>
+        public abstract Dictionary<string, object> GetEditableParameters();
 
         /// <summary>
         /// Tells the current control if the mouse is intersecting the object's click area.
@@ -73,9 +86,9 @@ namespace ChemNotation.DiagramObjects
                 case ObjectTypeID.Bond:
                     return new Bond();
                 case ObjectTypeID.Line:
-                    throw new NotImplementedException("Line type not implemented yet.");
+                    return new Line();
                 case ObjectTypeID.Text:
-                    throw new NotImplementedException("Text type not implemented yet.");
+                    return new Text();
                 default:
                     throw new ArgumentException("Invalid DiagramObject type.");
             }

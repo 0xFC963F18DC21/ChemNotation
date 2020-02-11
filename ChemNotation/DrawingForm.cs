@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 using ChemNotation.DiagramObjects;
 using SkiaSharp;
 using SkiaSharp.Views;
@@ -28,7 +29,14 @@ namespace ChemNotation
         // Current diagram object
         public DiagramObject CurrentObject { get; set; } = null;
 
+        // Selected diagram object
+        public DiagramObject SelectedObject { get; set; } = null;
+
         public string MessageBoxText {
+            get
+            {
+                return StatusTextBox.Text;
+            }
             set
             {
                 if (value != StatusTextBox.Text)
@@ -37,6 +45,22 @@ namespace ChemNotation
                     StatusTextBox.Text = value;
                 }
             }
+        }
+
+        /// <summary>
+        /// Enum for currently-selected action.
+        /// </summary>
+        public enum DiagramAction
+        {
+            Select,
+            PlaceAtom, PlaceAtomCarbon, PlaceAtomNitrogen, PlaceAtomOxygen, PlaceAtomHydrogen,
+            PlaceSingleBond, PlaceDoubleBond, PlaceTripleBond, PlaceAromaticBond, PlaceBondEnd,
+            PlaceLineStart, PlaceLineEnd,
+            PlaceCurveStart, PlaceCurveControlPoint, PlaceCurveEnd,
+            PlaceStraightArrowStart, PlaceStraightArrowEnd,
+            PlaceCurvedArrowStart, PlaceCurvedArrowControlPoint, PlaceCurvedArrowEnd,
+            ChargeIncrease, ChargeDecrease,
+            PlaceSharpLineStart, PlaceSharpLineControlPoint, PlaceSharpArrowStart, PlaceSharpArrowControlPoint, PlaceText
         }
 
         public DrawingForm()
@@ -48,7 +72,7 @@ namespace ChemNotation
             SelectedTool = DiagramAction.Select;
 
             CurrentDiagram = new Diagram(DiagramView.Width, DiagramView.Height);
-            UpdateScreen();
+            UpdateScreen(true);
         }
 
         /// <summary>
@@ -71,7 +95,7 @@ namespace ChemNotation
                     DiagramView.Image = img;
                 }
 
-                if (clear) MessageBoxText = "Diagram view cleared and redrawn.";
+                if (clear && !MessageBoxText.Contains(" Diagram view cleared and redrawn.")) MessageBoxText += " Diagram view cleared and redrawn.";
             }
             catch (Exception e)
             {
@@ -89,21 +113,70 @@ namespace ChemNotation
             UpdateScreen(false);
         }
 
+        // When clicking on the diagram.
         private void DiagramView_Click(object sender, EventArgs e)
         {
             MouseEventArgs args = (MouseEventArgs)e;
             Point clickLocation = args.Location;
 
-            // SKPaint style = new SKPaint();
-            // style.Color = SKColors.Black;
+            // Grid snap for atoms and texts.
+            if (GridSettingForm.Settings.GridWidth > 0 && GridSettingForm.Settings.GridHeight > 0 &&
+                (new DiagramAction[] {
+                    DiagramAction.PlaceAtom, DiagramAction.PlaceText, DiagramAction.PlaceAtomCarbon, DiagramAction.PlaceAtomHydrogen, DiagramAction.PlaceAtomNitrogen, DiagramAction.PlaceAtomOxygen
+                }.Contains(SelectedTool)))
+            {
+                // Get grid settings from settings object.
+                int w = GridSettingForm.Settings.GridWidth, h = GridSettingForm.Settings.GridHeight;
+                int xo = GridSettingForm.Settings.GridXOffset, yo = GridSettingForm.Settings.GridYOffset;
+                int ux = clickLocation.X - xo, uy = clickLocation.Y - yo;
 
-            // int testSquareWidth = 8;
+                // Find closest grid intersections.
+                int[][] pairs =
+                {
+                    new int[] { ux - (ux % w), uy - (uy % h) },
+                    new int[] { ux + (w - (ux % w)), uy - (uy % h) },
+                    new int[] { ux - (ux % w), uy + (h - (uy % h)) },
+                    new int[] { ux + (w - (ux % w)), uy + (h - (uy % h)) }
+                };
 
-            // CurrentDiagram.DiagramSurface.Canvas.DrawRect(
-            //     clickLocation.X - (testSquareWidth / 2),
-            //     clickLocation.Y - (testSquareWidth / 2),
-            //     testSquareWidth, testSquareWidth,
-            //     style);
+                // Get distances to intersections.
+                double[] distances = new double[pairs.Length];
+                for (int i = 0; i < pairs.Length; i++)
+                {
+                    int dx, dy;
+                    dx = pairs[i][0] - ux;
+                    dy = pairs[i][1] - uy;
+
+                    distances[i] = Math.Sqrt(dx * dx + dy * dy);  // via Pythagoras' Theorem.
+                }
+
+                // Get minimum distance and index of minimum distance.
+                int mindex;
+                double minstance;
+                mindex = 0;
+                minstance = distances[0];
+                for (int i = 1; i < distances.Length; i++)
+                {
+                    if (distances[i] < minstance)
+                    {
+                        minstance = distances[i];
+                        mindex = i;
+                    }
+                }
+
+                // Move selection to placement.
+                clickLocation.X = pairs[mindex][0] + xo;
+                clickLocation.Y = pairs[mindex][1] + yo;
+            }
+
+            // Finding nearby objects for object anchoring.
+            List<DiagramObject> objects = new List<DiagramObject>();
+            List<DiagramObject> atoms = new List<DiagramObject>();
+            List<DiagramObject> texts = new List<DiagramObject>();
+            foreach (DiagramObject obj in CurrentDiagram.Objects) if (obj.IsMouseIntersect(clickLocation)) objects.Add(obj);
+            foreach (DiagramObject obj in objects) if (obj.ObjectID == DiagramObject.ObjectTypeID.Atom) atoms.Add(obj);
+            foreach (DiagramObject obj in objects) if (obj.ObjectID == DiagramObject.ObjectTypeID.Text) texts.Add(obj);
+            int anchor = -1;  // For object anchoring.
 
             try
             {
@@ -111,6 +184,27 @@ namespace ChemNotation
                 switch (SelectedTool)
                 {
                     case DiagramAction.Select:
+                        foreach (DiagramObject obj in objects)
+                        {
+                            if (args.Button == MouseButtons.Right)
+                            {
+                                CurrentDiagram.RemoveDiagramObject(obj.DiagramID);
+                                MessageBoxText = $"Object of ID {obj.DiagramID} deleted.";
+                                break;
+                            }
+                            else
+                            {
+                                if (SelectedObject != obj)
+                                {
+                                    SelectedObject = obj;
+
+                                    EditingForm eForm = new EditingForm(obj);
+                                    eForm.Show();
+
+                                    break;
+                                }
+                            }
+                        }
                         break;
                     case DiagramAction.PlaceAtom:
                         var par = CurrentObject.GetInternalParameters();
@@ -136,31 +230,53 @@ namespace ChemNotation
                         CurrentDiagram.AddDiagramObject(new Atom("H", clickLocation.X, clickLocation.Y, new SKColor(128, 128, 128)));
                         break;
                     case DiagramAction.PlaceSingleBond:
-                        CurrentObject = new Bond(clickLocation.X, clickLocation.Y, 0, 0, 1.5f, null, Bond.BondType.Single);
+                        if (atoms.Count > 0) anchor = atoms[0].DiagramID;
+                        CurrentObject = new Bond(clickLocation.X, clickLocation.Y, 0, 0, 1.5f, null, Bond.BondType.Single, Bond.BondStyle.Plain, anchor);
                         ToolGroup.Enabled = false;
                         SelectedTool = DiagramAction.PlaceBondEnd;
-                        return;
+                        break;
                     case DiagramAction.PlaceDoubleBond:
-                        CurrentObject = new Bond(clickLocation.X, clickLocation.Y, 0, 0, 1.5f, null, Bond.BondType.Double);
+                        if (atoms.Count > 0) anchor = atoms[0].DiagramID;
+                        CurrentObject = new Bond(clickLocation.X, clickLocation.Y, 0, 0, 1.5f, null, Bond.BondType.Double, Bond.BondStyle.Plain, anchor);
                         ToolGroup.Enabled = false;
                         SelectedTool = DiagramAction.PlaceBondEnd;
-                        return;
+                        break;
                     case DiagramAction.PlaceTripleBond:
-                        CurrentObject = new Bond(clickLocation.X, clickLocation.Y, 0, 0, 1.5f, null, Bond.BondType.Triple);
+                        if (atoms.Count > 0) anchor = atoms[0].DiagramID;
+                        CurrentObject = new Bond(clickLocation.X, clickLocation.Y, 0, 0, 1.5f, null, Bond.BondType.Triple, Bond.BondStyle.Plain, anchor);
                         ToolGroup.Enabled = false;
                         SelectedTool = DiagramAction.PlaceBondEnd;
-                        return;
+                        break;
                     case DiagramAction.PlaceAromaticBond:
-                        CurrentObject = new Bond(clickLocation.X, clickLocation.Y, 0, 0, 1.5f, null, Bond.BondType.Aromatic);
+                        if (atoms.Count > 0) anchor = atoms[0].DiagramID;
+                        CurrentObject = new Bond(clickLocation.X, clickLocation.Y, 0, 0, 1.5f, null, Bond.BondType.Aromatic, Bond.BondStyle.Plain, anchor);
                         ToolGroup.Enabled = false;
                         SelectedTool = DiagramAction.PlaceBondEnd;
-                        return;
+                        break;
                     case DiagramAction.PlaceBondEnd:
                         if (CurrentObject.ObjectID == DiagramObject.ObjectTypeID.Bond)
                         {
+                            int ach = ((Bond)CurrentObject).AnchorID1;
+                            if (atoms.Count > 0)
+                            {
+                                foreach (var atom in atoms)
+                                {
+                                    if (atom.DiagramID != ach)
+                                    {
+                                        anchor = atom.DiagramID;
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        anchor = -1;
+                                    }
+                                }
+                            }
+
                             var parameters = CurrentObject.GetInternalParameters();
                             parameters["X2"] = (float)clickLocation.X;
                             parameters["Y2"] = (float)clickLocation.Y;
+                            parameters["AnchorID2"] = anchor;
                             CurrentObject.EditInternalParameters(parameters);
 
                             CurrentDiagram.AddDiagramObject(CurrentObject);
@@ -185,38 +301,205 @@ namespace ChemNotation
                         }
                         break;
                     case DiagramAction.PlaceLineStart:
+                        CurrentObject = new Line(clickLocation.X, clickLocation.Y, 0, 0, null, 1.5f, null, Line.LineType.Line);
+                        ToolGroup.Enabled = false;
+                        SelectedTool = DiagramAction.PlaceLineEnd;
                         break;
                     case DiagramAction.PlaceLineEnd:
+                        if (CurrentObject.ObjectID == DiagramObject.ObjectTypeID.Line)
+                        {
+                            var parameters = CurrentObject.GetInternalParameters();
+                            parameters["X2"] = (float)clickLocation.X;
+                            parameters["Y2"] = (float)clickLocation.Y;
+                            CurrentObject.EditInternalParameters(parameters);
+
+                            CurrentDiagram.AddDiagramObject(CurrentObject);
+                            ToolGroup.Enabled = true;
+
+                            SelectedTool = DiagramAction.PlaceLineStart;
+                            // CurrentObject = null;
+                        }
                         break;
                     case DiagramAction.PlaceCurveStart:
+                        CurrentObject = new Line(clickLocation.X, clickLocation.Y, 0, 0, null, 1.5f, null, Line.LineType.Curve, Line.LineStyle.Plain);
+                        ToolGroup.Enabled = false;
+                        SelectedTool = DiagramAction.PlaceCurveControlPoint;
+                        break;
+                    case DiagramAction.PlaceCurveControlPoint:
+                        if (CurrentObject.ObjectID == DiagramObject.ObjectTypeID.Line)
+                        {
+                            var parameters = CurrentObject.GetInternalParameters();
+                            List<float[]> cpts = (List<float[]>)parameters["ControlPoints"];
+
+                            cpts.Add(new float[] { clickLocation.X, clickLocation.Y });
+
+                            CurrentObject.EditInternalParameters(parameters);
+
+                            if (cpts.Count == 2) SelectedTool = DiagramAction.PlaceCurveEnd;
+                        }
                         break;
                     case DiagramAction.PlaceCurveEnd:
+                        if (CurrentObject.ObjectID == DiagramObject.ObjectTypeID.Line)
+                        {
+                            var parameters = CurrentObject.GetInternalParameters();
+                            parameters["X2"] = (float)clickLocation.X;
+                            parameters["Y2"] = (float)clickLocation.Y;
+                            CurrentObject.EditInternalParameters(parameters);
+
+                            CurrentDiagram.AddDiagramObject(CurrentObject);
+                            ToolGroup.Enabled = true;
+
+                            SelectedTool = DiagramAction.PlaceCurveStart;
+                            // CurrentObject = null;
+                        }
                         break;
                     case DiagramAction.PlaceStraightArrowStart:
+                        CurrentObject = new Line(clickLocation.X, clickLocation.Y, 0, 0, null, 1.5f, null, Line.LineType.Line, Line.LineStyle.Plain, Line.EndType.Plain, Line.EndType.Arrow);
+                        ToolGroup.Enabled = false;
+                        SelectedTool = DiagramAction.PlaceStraightArrowEnd;
                         break;
                     case DiagramAction.PlaceStraightArrowEnd:
+                        if (CurrentObject.ObjectID == DiagramObject.ObjectTypeID.Line)
+                        {
+                            var parameters = CurrentObject.GetInternalParameters();
+                            parameters["X2"] = (float)clickLocation.X;
+                            parameters["Y2"] = (float)clickLocation.Y;
+                            CurrentObject.EditInternalParameters(parameters);
+
+                            CurrentDiagram.AddDiagramObject(CurrentObject);
+                            ToolGroup.Enabled = true;
+
+                            SelectedTool = DiagramAction.PlaceStraightArrowStart;
+                            // CurrentObject = null;
+                        }
                         break;
                     case DiagramAction.PlaceCurvedArrowStart:
+                        CurrentObject = new Line(clickLocation.X, clickLocation.Y, 0, 0, null, 1.5f, null, Line.LineType.Curve, Line.LineStyle.Plain, Line.EndType.Plain, Line.EndType.Arrow);
+                        ToolGroup.Enabled = false;
+                        SelectedTool = DiagramAction.PlaceCurvedArrowControlPoint;
                         break;
-                    case DiagramAction.PlaceCurvedArrowPoint:
+                    case DiagramAction.PlaceCurvedArrowControlPoint:
+                        if (CurrentObject.ObjectID == DiagramObject.ObjectTypeID.Line)
+                        {
+                            var parameters = CurrentObject.GetInternalParameters();
+                            List<float[]> cpts = (List<float[]>)parameters["ControlPoints"];
+
+                            cpts.Add(new float[] { clickLocation.X, clickLocation.Y });
+
+                            CurrentObject.EditInternalParameters(parameters);
+
+                            if(cpts.Count == 2) SelectedTool = DiagramAction.PlaceCurvedArrowEnd;
+                        }
+                        break;
+                    case DiagramAction.PlaceCurvedArrowEnd:
+                        if (CurrentObject.ObjectID == DiagramObject.ObjectTypeID.Line)
+                        {
+                            var parameters = CurrentObject.GetInternalParameters();
+                            parameters["X2"] = (float)clickLocation.X;
+                            parameters["Y2"] = (float)clickLocation.Y;
+                            CurrentObject.EditInternalParameters(parameters);
+
+                            CurrentDiagram.AddDiagramObject(CurrentObject);
+                            ToolGroup.Enabled = true;
+
+                            SelectedTool = DiagramAction.PlaceCurvedArrowStart;
+                            // CurrentObject = null;
+                        }
                         break;
                     case DiagramAction.ChargeIncrease:
+                        foreach (DiagramObject obj in objects)
+                        {
+                            if (obj.ObjectID == DiagramObject.ObjectTypeID.Atom)
+                            {
+                                var p = ((Atom)obj).GetInternalParameters();
+                                p["Charge"] = (int)p["Charge"] + 1;
+                                obj.EditInternalParameters(p);
+                                break;
+                            }
+                        }
                         break;
                     case DiagramAction.ChargeDecrease:
+                        foreach (DiagramObject obj in objects)
+                        {
+                            if (obj.ObjectID == DiagramObject.ObjectTypeID.Atom)
+                            {
+                                var p = ((Atom)obj).GetInternalParameters();
+                                p["Charge"] = (int)p["Charge"] - 1;
+                                obj.EditInternalParameters(p);
+                                break;
+                            }
+                        }
                         break;
-                    case DiagramAction.PlaceTextGeneric:
+                    case DiagramAction.PlaceSharpLineStart:
+                        CurrentObject = new Line(clickLocation.X, clickLocation.Y, 0, 0, null, 1.5f, null, Line.LineType.Sharp, Line.LineStyle.Plain);
+                        ToolGroup.Enabled = false;
+                        SelectedTool = DiagramAction.PlaceSharpLineControlPoint;
                         break;
-                    case DiagramAction.PlaceTextLabel:
+                    case DiagramAction.PlaceSharpLineControlPoint:
+                        if (args.Button == MouseButtons.Right)
+                        {
+                            if (CurrentObject.ObjectID == DiagramObject.ObjectTypeID.Line)
+                            {
+                                var parameters = CurrentObject.GetInternalParameters();
+                                parameters["X2"] = (float)clickLocation.X;
+                                parameters["Y2"] = (float)clickLocation.Y;
+                                CurrentObject.EditInternalParameters(parameters);
+
+                                CurrentDiagram.AddDiagramObject(CurrentObject);
+                                ToolGroup.Enabled = true;
+                            }
+
+                            SelectedTool = DiagramAction.PlaceSharpLineStart;
+                        }
+                        else
+                        {
+                            if (CurrentObject.ObjectID == DiagramObject.ObjectTypeID.Line)
+                            {
+                                var parameters = CurrentObject.GetInternalParameters();
+                                List<float[]> cpts = (List<float[]>)parameters["ControlPoints"];
+
+                                cpts.Add(new float[] { clickLocation.X, clickLocation.Y });
+
+                                CurrentObject.EditInternalParameters(parameters);
+                            }
+                        }
                         break;
-                    case DiagramAction.PlaceParentheses:
+                    case DiagramAction.PlaceSharpArrowStart:
+                        CurrentObject = new Line(clickLocation.X, clickLocation.Y, 0, 0, null, 1.5f, null, Line.LineType.Sharp, Line.LineStyle.Plain, Line.EndType.Plain, Line.EndType.Arrow);
+                        ToolGroup.Enabled = false;
+                        SelectedTool = DiagramAction.PlaceSharpArrowControlPoint;
                         break;
-                    case DiagramAction.PlaceBrackets:
+                    case DiagramAction.PlaceSharpArrowControlPoint:
+                        if (args.Button == MouseButtons.Right)
+                        {
+                            if (CurrentObject.ObjectID == DiagramObject.ObjectTypeID.Line)
+                            {
+                                var parameters = CurrentObject.GetInternalParameters();
+                                parameters["X2"] = (float)clickLocation.X;
+                                parameters["Y2"] = (float)clickLocation.Y;
+                                CurrentObject.EditInternalParameters(parameters);
+
+                                CurrentDiagram.AddDiagramObject(CurrentObject);
+                                ToolGroup.Enabled = true;
+                            }
+
+                            SelectedTool = DiagramAction.PlaceSharpArrowStart;
+                        }
+                        else
+                        {
+                            if (CurrentObject.ObjectID == DiagramObject.ObjectTypeID.Line)
+                            {
+                                var parameters = CurrentObject.GetInternalParameters();
+                                List<float[]> cpts = (List<float[]>)parameters["ControlPoints"];
+
+                                cpts.Add(new float[] { clickLocation.X, clickLocation.Y });
+
+                                CurrentObject.EditInternalParameters(parameters);
+                            }
+                        }
                         break;
-                    case DiagramAction.PlaceBraces:
-                        break;
-                    case DiagramAction.PlaceMiscellaneous:
-                        break;
-                    case DiagramAction.EditObjectHandle:
+                    case DiagramAction.PlaceText:
+                        CurrentDiagram.AddDiagramObject(new Text("Edit object to edit text.", clickLocation.X, clickLocation.Y));
                         break;
                     default:
                         break;
@@ -227,24 +510,6 @@ namespace ChemNotation
             {
                 ErrorLogger.ShowErrorMessageBox(err);
             }
-        }
-
-        /// <summary>
-        /// Enum for currently-selected action.
-        /// </summary>
-        public enum DiagramAction
-        {
-            Select,
-            PlaceAtom, PlaceAtomCarbon, PlaceAtomNitrogen, PlaceAtomOxygen, PlaceAtomHydrogen, 
-            PlaceSingleBond, PlaceDoubleBond, PlaceTripleBond, PlaceAromaticBond, PlaceBondEnd,
-            PlaceLineStart, PlaceLineEnd,
-            PlaceCurveStart, PlaceCurveEnd,
-            PlaceStraightArrowStart, PlaceStraightArrowEnd,
-            PlaceCurvedArrowStart, PlaceCurvedArrowPoint,
-            ChargeIncrease, ChargeDecrease,
-            PlaceTextGeneric, PlaceTextLabel,
-            PlaceParentheses, PlaceBrackets, PlaceBraces, PlaceMiscellaneous,
-            EditObjectHandle
         }
 
         private void newDiagramToolStripMenuItem_Click(object sender, EventArgs e)
@@ -258,6 +523,58 @@ namespace ChemNotation
         {
             ErrorLogger.LogMessage("Application exited.", typeof(DrawingForm));
             Application.Exit();
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Enabled = false;
+
+            // Disable visible grid
+            GridSettingForm.Settings = new GridSettingForm.ProgramSettings(0, 0, 0, 0);
+
+            // Create file saving dialogue window.
+            SaveFileDialog dialog = new SaveFileDialog();
+
+            // Default settings.
+            dialog.AddExtension = true;
+            dialog.FileName = $"SAVEFILE_{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss-fff")}";
+            dialog.DefaultExt = "png";
+
+            dialog.Filter = "PNG Files (*.png)|All Files (*.*)";
+            dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+
+            DialogResult res = dialog.ShowDialog();
+
+            if (res == DialogResult.OK)
+            {
+                try
+                {
+                    // Only save if dialogue was confirmed. Otherwise do not.
+                    byte[] img = CurrentDiagram.DiagramSurface.Snapshot().Encode().ToArray();
+                    using (Stream stream = dialog.OpenFile())
+                    {
+                        stream.Write(img, 0, img.Length);
+                    }
+
+                    MessageBoxText = $"File successfully saved as '{dialog.FileName}'.";
+                }
+                catch (Exception exc)
+                {
+                    Log.LogMessageError($"File save at '{dialog.FileName}' failed.", exc);
+                }
+            }
+
+            dialog.Dispose();
+            dialog = null;
+
+            // Reset grid snap.
+            using (StreamReader reader = File.OpenText(@"Resource/Settings.json"))
+            {
+                JsonSerializer serializer = new JsonSerializer();
+                GridSettingForm.Settings = (GridSettingForm.ProgramSettings)serializer.Deserialize(reader, typeof(GridSettingForm.ProgramSettings));
+            }
+
+            Enabled = true;
         }
 
         // TODO: fix tab ordering on the buttons
@@ -366,28 +683,91 @@ namespace ChemNotation
 
         private void ButtonParentheses_Click(object sender, EventArgs e)
         {
-            SelectedTool = DiagramAction.PlaceParentheses;
-            MessageBoxText = "Parentheses tool selected.";
+            SelectedTool = DiagramAction.PlaceSharpLineStart;
+            MessageBoxText = "Sharp Line tool selected.";
         }
 
         private void ButtonBrackets_Click(object sender, EventArgs e)
         {
-            SelectedTool = DiagramAction.PlaceBrackets;
-            MessageBoxText = "Brackets tool selected.";
+            SelectedTool = DiagramAction.PlaceSharpArrowStart;
+            MessageBoxText = "Sharp Arrow tool selected.";
         }
 
         private void ButtonBraces_Click(object sender, EventArgs e)
         {
-            SelectedTool = DiagramAction.PlaceBraces;
-            MessageBoxText = "Braces tool selected.";
+            saveToolStripMenuItem_Click(null, null);
         }
 
         private void ButtonObject_Click(object sender, EventArgs e)
         {
-            SelectedTool = DiagramAction.PlaceMiscellaneous;
-            MessageBoxText = "Miscellaneous tool selected.";
+            SelectedTool = DiagramAction.PlaceText;
+            MessageBoxText = "Text tool selected.";
+        }
 
-            // TODO: make window for selection of misc items
+        private void queryFormulaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Enumerating all of the present atoms.
+            IEnumerable<DiagramObject> atoms =
+                from obj in CurrentDiagram.Objects
+                where obj.ObjectID == DiagramObject.ObjectTypeID.Atom
+                select obj;
+
+            if (atoms.Count() < 1)
+            {
+                MessageBoxText = "There are no atoms on the diagram.";
+                return;
+            }
+
+            Dictionary<string, int> symbolValues = new Dictionary<string, int>();
+            foreach (DiagramObject atom in atoms)
+            {
+                if (!(atom is Atom)) continue;
+
+                Atom atm = (Atom)atom;
+                string symbol = atm.Symbol;
+
+                if (!symbolValues.Keys.Contains(symbol)) symbolValues.Add(symbol, 1);
+                else
+                {
+                    ++symbolValues[symbol];
+                }
+            }
+
+            // Forming the query.
+            StringBuilder query = new StringBuilder();
+            List<string> sortedKeys = symbolValues.Keys.ToList();
+            sortedKeys.Sort();
+
+            foreach (string key in sortedKeys)
+            {
+                query.Append(key);
+                if (symbolValues[key] > 1) query.Append(symbolValues[key]);
+            }
+
+            QuerySourceForm src = new QuerySourceForm();
+            src.ChooseSource(query.ToString());
+
+            MessageBoxText = $"Query window opened for {query}";
+
+            src.Dispose();
+            src = null;
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Program.AForm.Show();
+            MessageBoxText = "About / Help window opened.";
+        }
+
+        private void gridSnapSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Enabled = false;
+            GridSettingForm form = new GridSettingForm();
+            form.ShowDialog();
+
+            form.Dispose();
+            form = null;
+            Enabled = true;
         }
     }
 }

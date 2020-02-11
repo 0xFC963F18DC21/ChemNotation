@@ -33,10 +33,10 @@
             this.ToolGroup = new System.Windows.Forms.GroupBox();
             this.ButtonAtomHydrogen = new System.Windows.Forms.Button();
             this.ButtonCurve = new System.Windows.Forms.Button();
-            this.ButtonObject = new System.Windows.Forms.Button();
-            this.ButtonBraces = new System.Windows.Forms.Button();
-            this.ButtonBrackets = new System.Windows.Forms.Button();
-            this.ButtonParentheses = new System.Windows.Forms.Button();
+            this.ButtonText = new System.Windows.Forms.Button();
+            this.ButtonQuickExport = new System.Windows.Forms.Button();
+            this.ButtonSharpArrow = new System.Windows.Forms.Button();
+            this.ButtonSharpLine = new System.Windows.Forms.Button();
             this.ButtonChargeNegative = new System.Windows.Forms.Button();
             this.ButtonChargePositive = new System.Windows.Forms.Button();
             this.ButtonOxygen = new System.Windows.Forms.Button();
@@ -56,7 +56,12 @@
             this.DrawingFormToolStrip = new System.Windows.Forms.ToolStrip();
             this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
             this.newDiagramToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripDropDownButton2 = new System.Windows.Forms.ToolStripDropDownButton();
+            this.queryFormulaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gridSnapSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.DiagramView)).BeginInit();
             this.ToolGroup.SuspendLayout();
             this.DrawingFormToolStrip.SuspendLayout();
@@ -76,10 +81,10 @@
             // 
             this.ToolGroup.Controls.Add(this.ButtonAtomHydrogen);
             this.ToolGroup.Controls.Add(this.ButtonCurve);
-            this.ToolGroup.Controls.Add(this.ButtonObject);
-            this.ToolGroup.Controls.Add(this.ButtonBraces);
-            this.ToolGroup.Controls.Add(this.ButtonBrackets);
-            this.ToolGroup.Controls.Add(this.ButtonParentheses);
+            this.ToolGroup.Controls.Add(this.ButtonText);
+            this.ToolGroup.Controls.Add(this.ButtonQuickExport);
+            this.ToolGroup.Controls.Add(this.ButtonSharpArrow);
+            this.ToolGroup.Controls.Add(this.ButtonSharpLine);
             this.ToolGroup.Controls.Add(this.ButtonChargeNegative);
             this.ToolGroup.Controls.Add(this.ButtonChargePositive);
             this.ToolGroup.Controls.Add(this.ButtonOxygen);
@@ -121,45 +126,45 @@
             this.ButtonCurve.UseVisualStyleBackColor = true;
             this.ButtonCurve.Click += new System.EventHandler(this.ButtonCurve_Click);
             // 
-            // ButtonObject
+            // ButtonText
             // 
-            this.ButtonObject.Location = new System.Drawing.Point(6, 568);
-            this.ButtonObject.Name = "ButtonObject";
-            this.ButtonObject.Size = new System.Drawing.Size(118, 23);
-            this.ButtonObject.TabIndex = 19;
-            this.ButtonObject.Text = "Miscellaneous";
-            this.ButtonObject.UseVisualStyleBackColor = true;
-            this.ButtonObject.Click += new System.EventHandler(this.ButtonObject_Click);
+            this.ButtonText.Location = new System.Drawing.Point(6, 539);
+            this.ButtonText.Name = "ButtonText";
+            this.ButtonText.Size = new System.Drawing.Size(118, 23);
+            this.ButtonText.TabIndex = 18;
+            this.ButtonText.Text = "Text";
+            this.ButtonText.UseVisualStyleBackColor = true;
+            this.ButtonText.Click += new System.EventHandler(this.ButtonObject_Click);
             // 
-            // ButtonBraces
+            // ButtonQuickExport
             // 
-            this.ButtonBraces.Location = new System.Drawing.Point(6, 539);
-            this.ButtonBraces.Name = "ButtonBraces";
-            this.ButtonBraces.Size = new System.Drawing.Size(118, 23);
-            this.ButtonBraces.TabIndex = 18;
-            this.ButtonBraces.Text = "{ } Braces";
-            this.ButtonBraces.UseVisualStyleBackColor = true;
-            this.ButtonBraces.Click += new System.EventHandler(this.ButtonBraces_Click);
+            this.ButtonQuickExport.Location = new System.Drawing.Point(6, 568);
+            this.ButtonQuickExport.Name = "ButtonQuickExport";
+            this.ButtonQuickExport.Size = new System.Drawing.Size(118, 23);
+            this.ButtonQuickExport.TabIndex = 19;
+            this.ButtonQuickExport.Text = "Quick Export";
+            this.ButtonQuickExport.UseVisualStyleBackColor = true;
+            this.ButtonQuickExport.Click += new System.EventHandler(this.ButtonBraces_Click);
             // 
-            // ButtonBrackets
+            // ButtonSharpArrow
             // 
-            this.ButtonBrackets.Location = new System.Drawing.Point(6, 510);
-            this.ButtonBrackets.Name = "ButtonBrackets";
-            this.ButtonBrackets.Size = new System.Drawing.Size(118, 23);
-            this.ButtonBrackets.TabIndex = 17;
-            this.ButtonBrackets.Text = "[ ] Brackets";
-            this.ButtonBrackets.UseVisualStyleBackColor = true;
-            this.ButtonBrackets.Click += new System.EventHandler(this.ButtonBrackets_Click);
+            this.ButtonSharpArrow.Location = new System.Drawing.Point(6, 510);
+            this.ButtonSharpArrow.Name = "ButtonSharpArrow";
+            this.ButtonSharpArrow.Size = new System.Drawing.Size(118, 23);
+            this.ButtonSharpArrow.TabIndex = 17;
+            this.ButtonSharpArrow.Text = "Sharp Arrow";
+            this.ButtonSharpArrow.UseVisualStyleBackColor = true;
+            this.ButtonSharpArrow.Click += new System.EventHandler(this.ButtonBrackets_Click);
             // 
-            // ButtonParentheses
+            // ButtonSharpLine
             // 
-            this.ButtonParentheses.Location = new System.Drawing.Point(6, 481);
-            this.ButtonParentheses.Name = "ButtonParentheses";
-            this.ButtonParentheses.Size = new System.Drawing.Size(118, 23);
-            this.ButtonParentheses.TabIndex = 16;
-            this.ButtonParentheses.Text = "( ) Parentheses";
-            this.ButtonParentheses.UseVisualStyleBackColor = true;
-            this.ButtonParentheses.Click += new System.EventHandler(this.ButtonParentheses_Click);
+            this.ButtonSharpLine.Location = new System.Drawing.Point(6, 481);
+            this.ButtonSharpLine.Name = "ButtonSharpLine";
+            this.ButtonSharpLine.Size = new System.Drawing.Size(118, 23);
+            this.ButtonSharpLine.TabIndex = 16;
+            this.ButtonSharpLine.Text = "Sharp Line";
+            this.ButtonSharpLine.UseVisualStyleBackColor = true;
+            this.ButtonSharpLine.Click += new System.EventHandler(this.ButtonParentheses_Click);
             // 
             // ButtonChargeNegative
             // 
@@ -287,7 +292,7 @@
             this.ButtonSelect.Name = "ButtonSelect";
             this.ButtonSelect.Size = new System.Drawing.Size(118, 23);
             this.ButtonSelect.TabIndex = 0;
-            this.ButtonSelect.Text = "Select";
+            this.ButtonSelect.Text = "Select / Delete";
             this.ButtonSelect.UseVisualStyleBackColor = true;
             this.ButtonSelect.Click += new System.EventHandler(this.ButtonSelect_Click);
             // 
@@ -323,7 +328,8 @@
             // DrawingFormToolStrip
             // 
             this.DrawingFormToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripDropDownButton1});
+            this.toolStripDropDownButton1,
+            this.toolStripDropDownButton2});
             this.DrawingFormToolStrip.Location = new System.Drawing.Point(0, 0);
             this.DrawingFormToolStrip.Name = "DrawingFormToolStrip";
             this.DrawingFormToolStrip.Size = new System.Drawing.Size(970, 25);
@@ -335,6 +341,7 @@
             this.toolStripDropDownButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newDiagramToolStripMenuItem,
+            this.saveToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -349,12 +356,53 @@
             this.newDiagramToolStripMenuItem.Text = "New Diagram";
             this.newDiagramToolStripMenuItem.Click += new System.EventHandler(this.newDiagramToolStripMenuItem_Click);
             // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.saveToolStripMenuItem.Text = "Save Image";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // toolStripDropDownButton2
+            // 
+            this.toolStripDropDownButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripDropDownButton2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.queryFormulaToolStripMenuItem,
+            this.aboutToolStripMenuItem,
+            this.gridSnapSettingsToolStripMenuItem});
+            this.toolStripDropDownButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton2.Image")));
+            this.toolStripDropDownButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripDropDownButton2.Name = "toolStripDropDownButton2";
+            this.toolStripDropDownButton2.Size = new System.Drawing.Size(49, 22);
+            this.toolStripDropDownButton2.Text = "Tools";
+            // 
+            // queryFormulaToolStripMenuItem
+            // 
+            this.queryFormulaToolStripMenuItem.Name = "queryFormulaToolStripMenuItem";
+            this.queryFormulaToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.queryFormulaToolStripMenuItem.Text = "Query Formula";
+            this.queryFormulaToolStripMenuItem.Click += new System.EventHandler(this.queryFormulaToolStripMenuItem_Click);
+            // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.aboutToolStripMenuItem.Text = "About / Help";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            // 
+            // gridSnapSettingsToolStripMenuItem
+            // 
+            this.gridSnapSettingsToolStripMenuItem.Name = "gridSnapSettingsToolStripMenuItem";
+            this.gridSnapSettingsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.gridSnapSettingsToolStripMenuItem.Text = "Grid Snap Settings";
+            this.gridSnapSettingsToolStripMenuItem.Click += new System.EventHandler(this.gridSnapSettingsToolStripMenuItem_Click);
             // 
             // DrawingForm
             // 
@@ -402,10 +450,15 @@
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton1;
         private System.Windows.Forms.ToolStripMenuItem newDiagramToolStripMenuItem;
         public System.Windows.Forms.PictureBox DiagramView;
-        private System.Windows.Forms.Button ButtonObject;
-        private System.Windows.Forms.Button ButtonBraces;
-        private System.Windows.Forms.Button ButtonBrackets;
-        private System.Windows.Forms.Button ButtonParentheses;
+        private System.Windows.Forms.Button ButtonText;
+        private System.Windows.Forms.Button ButtonQuickExport;
+        private System.Windows.Forms.Button ButtonSharpArrow;
+        private System.Windows.Forms.Button ButtonSharpLine;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton2;
+        private System.Windows.Forms.ToolStripMenuItem queryFormulaToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem gridSnapSettingsToolStripMenuItem;
     }
 }

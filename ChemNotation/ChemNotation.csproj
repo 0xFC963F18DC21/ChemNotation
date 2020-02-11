@@ -104,6 +104,7 @@
     <Compile Include="DiagramObjects\Diagram.cs" />
     <Compile Include="DiagramObjects\DiagramObject.cs" />
     <Compile Include="DiagramObjects\Line.cs" />
+    <Compile Include="DiagramObjects\Text.cs" />
     <Compile Include="DrawingForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -118,6 +119,18 @@
     </Compile>
     <Compile Include="ErrorLogger.cs" />
     <Compile Include="JSONData.cs" />
+    <Compile Include="QuerySourceForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="QuerySourceForm.Designer.cs">
+      <DependentUpon>QuerySourceForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GridSettingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GridSettingForm.Designer.cs">
+      <DependentUpon>GridSettingForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="WelcomeForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -148,6 +161,12 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="QuerySourceForm.resx">
+      <DependentUpon>QuerySourceForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GridSettingForm.resx">
+      <DependentUpon>GridSettingForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="WelcomeForm.resx">
       <DependentUpon>WelcomeForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -164,6 +183,12 @@
     </Compile>
     <None Include="Resource\DefaultValues.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resource\Help.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resource\Settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -42,7 +42,7 @@ namespace ChemNotation.DiagramObjects
 
         public Bond() : this(0, 0) { }
 
-        public Bond(float x1 = 0, float y1 = 0, float x2 = 0, float y2 = 0, float thickness = 4f, SKColor? colour = null, BondType typeOfBond = BondType.Single, BondStyle subtype = BondStyle.Plain, int anchorID1 = -1, int anchorID2 = -1)
+        public Bond(float x1 = 0, float y1 = 0, float x2 = 0, float y2 = 0, float thickness = 1.5f, SKColor? colour = null, BondType typeOfBond = BondType.Single, BondStyle subtype = BondStyle.Plain, int anchorID1 = -1, int anchorID2 = -1)
         {
             DiagramID = Program.DForm.CurrentDiagram.NextFreeID();
             X1 = x1;
@@ -59,6 +59,71 @@ namespace ChemNotation.DiagramObjects
 
         public override void Draw(Diagram diagram)
         {
+            float usedX1 = X1, usedY1 = Y1;
+            float usedX2 = X2, usedY2 = Y2;
+
+            if (AnchorID1 != -1)
+            {
+                DiagramObject obj = Program.DForm.CurrentDiagram.GetDiagramObject(AnchorID1);
+                if (obj != null)
+                {
+                    if (obj.ObjectID == ObjectTypeID.Atom)
+                    {
+                        usedX1 = ((Atom)obj).X;
+                        usedY1 = ((Atom)obj).Y;
+                    }
+                }
+            }
+
+            if (AnchorID2 != -1)
+            {
+                DiagramObject obj = Program.DForm.CurrentDiagram.GetDiagramObject(AnchorID2);
+                if (obj != null)
+                {
+                    if (obj.ObjectID == ObjectTypeID.Atom)
+                    {
+                        usedX2 = ((Atom)obj).X;
+                        usedY2 = ((Atom)obj).Y;
+                    }
+                }
+            }
+
+            if (AnchorID1 != -1 || AnchorID2 != -1)
+            {
+                float off1 = 0, off2 = 0;
+                if (AnchorID1 != -1)
+                {
+                    DiagramObject obj = Program.DForm.CurrentDiagram.GetDiagramObject(AnchorID1);
+                    if (obj != null)
+                    {
+                        if (obj.ObjectID == ObjectTypeID.Atom)
+                        {
+                            off1 = ((Atom)obj).FontSize * 0.9f;
+                        }
+                    }
+                }
+
+                if (AnchorID2 != -1)
+                {
+                    DiagramObject obj = Program.DForm.CurrentDiagram.GetDiagramObject(AnchorID2);
+                    if (obj != null)
+                    {
+                        if (obj.ObjectID == ObjectTypeID.Atom)
+                        {
+                            off2 = ((Atom)obj).FontSize * 0.9f;
+                        }
+                    }
+                }
+
+                double ang1 = Math.Atan2(usedY2 - usedY1, usedX2 - usedX1);
+                double ang2 = ang1 - Math.PI;
+
+                usedX1 += (float)Math.Cos(ang1) * off1;
+                usedY1 += (float)Math.Sin(ang1) * off1;
+                usedX2 += (float)Math.Cos(ang2) * off2;
+                usedY2 += (float)Math.Sin(ang2) * off2;
+            }
+
             SKPaint paint = new SKPaint
             {
                 Color = Colour,
@@ -70,30 +135,30 @@ namespace ChemNotation.DiagramObjects
 
             SKPath path = new SKPath();
 
-            double angle = Math.Atan2(Y2 - Y1, X2 - X1);
+            double angle = Math.Atan2(usedY2 - usedY1, usedX2 - usedX1);
 
             //if (angle < 0d) angle += Math.PI * 2;
 
             double a1 = angle + (Math.PI / 2);
             double a2 = angle - (Math.PI / 2);
 
-            float dPointX1 = X1 + (float)(3 * Math.Cos(a1));
-            float dPointY1 = Y1 + (float)(3 * Math.Sin(a1));
-            float dPointX2 = X2 + (float)(3 * Math.Cos(a1));
-            float dPointY2 = Y2 + (float)(3 * Math.Sin(a1));
+            float dPointX1 = usedX1 + (float)((Thickness * 2) * Math.Cos(a1));
+            float dPointY1 = usedY1 + (float)((Thickness * 2) * Math.Sin(a1));
+            float dPointX2 = usedX2 + (float)((Thickness * 2) * Math.Cos(a1));
+            float dPointY2 = usedY2 + (float)((Thickness * 2) * Math.Sin(a1));
 
-            float dPointX3 = X1 + (float)(3 * Math.Cos(a2));
-            float dPointY3 = Y1 + (float)(3 * Math.Sin(a2));
-            float dPointX4 = X2 + (float)(3 * Math.Cos(a2));
-            float dPointY4 = Y2 + (float)(3 * Math.Sin(a2));
+            float dPointX3 = usedX1 + (float)((Thickness * 2) * Math.Cos(a2));
+            float dPointY3 = usedY1 + (float)((Thickness * 2) * Math.Sin(a2));
+            float dPointX4 = usedX2 + (float)((Thickness * 2) * Math.Cos(a2));
+            float dPointY4 = usedY2 + (float)((Thickness * 2) * Math.Sin(a2));
 
-            if (TypeOfBond != BondType.Single) Log.LogMessageGeneral($"({X1}, {Y1}) | ({X2}, {Y2}) || ({dPointX1}, {dPointY1}) | ({dPointX2}, {dPointY2}) | ({dPointX3}, {dPointY3}) | ({dPointX4}, {dPointY4})");
+            if (TypeOfBond != BondType.Single) Log.LogMessageGeneral($"({usedX1}, {usedY1}) | ({usedX2}, {usedY2}) || ({dPointX1}, {dPointY1}) | ({dPointX2}, {dPointY2}) | ({dPointX3}, {dPointY3}) | ({dPointX4}, {dPointY4})");
 
             if (BondSubtype == BondStyle.Wedged || BondSubtype == BondStyle.Dashed)
             {
                 SKPoint[] points = new SKPoint[]
                 {
-                    new SKPoint() { X = X1, Y = Y1 },
+                    new SKPoint() { X = usedX1, Y = usedY1 },
                     new SKPoint() { X = dPointX3, Y = dPointY3 },
                     new SKPoint() { X = dPointX4, Y = dPointY4 }
                 };
@@ -105,7 +170,7 @@ namespace ChemNotation.DiagramObjects
                         break;
                     case BondStyle.Dashed:
                         paint.Style = SKPaintStyle.StrokeAndFill;
-                        paint.PathEffect = SKPathEffect.CreateDash(new float[] { 9f, 3f }, 0);
+                        paint.PathEffect = SKPathEffect.CreateDash(new float[] { Thickness * 3, Thickness * 2 }, 0);
                         break;
                     default:
                         break;
@@ -118,8 +183,8 @@ namespace ChemNotation.DiagramObjects
                 switch (TypeOfBond)
                 {
                     case BondType.Single:
-                        path.MoveTo(X1, Y1);
-                        path.LineTo(X2, Y2);
+                        path.MoveTo(usedX1, usedY1);
+                        path.LineTo(usedX2, usedY2);
                         break;
                     case BondType.Double:
                         path.MoveTo(dPointX1, dPointY1);
@@ -132,8 +197,8 @@ namespace ChemNotation.DiagramObjects
                         diagram.DiagramSurface.Canvas.DrawPath(path2, paint);
                         break;
                     case BondType.Triple:
-                        path.MoveTo(X1, Y1);
-                        path.LineTo(X2, Y2);
+                        path.MoveTo(usedX1, usedY1);
+                        path.LineTo(usedX2, usedY2);
 
                         SKPath p2 = new SKPath(), p3 = new SKPath();
                         p2.MoveTo(dPointX1, dPointY1);
@@ -152,7 +217,7 @@ namespace ChemNotation.DiagramObjects
                             IsAntialias = true,
                             StrokeWidth = Thickness,
                             StrokeCap = SKStrokeCap.Round,
-                            PathEffect = SKPathEffect.CreateDash(new float[] { 9f, 3f }, 0),
+                            PathEffect = SKPathEffect.CreateDash(new float[] { Thickness * 3, Thickness * 2 }, 0),
                             Style = SKPaintStyle.Stroke
                         };
 
@@ -172,6 +237,7 @@ namespace ChemNotation.DiagramObjects
                 //path.Close();
                 diagram.DiagramSurface.Canvas.DrawPath(path, paint);
             }
+            paint.Dispose();
         }
 
         public override void EditInternalParameters(Dictionary<string, object> parameters)
@@ -259,7 +325,71 @@ namespace ChemNotation.DiagramObjects
 
         public override bool IsMouseIntersect(Point location)
         {
-            throw new NotImplementedException();
+            float avgX, avgY;
+            avgX = (X1 + X2) / 2f;
+            avgY = (Y1 + Y2) / 2f;
+
+            float dX, dY;
+            dX = location.X - avgX;
+            dY = location.Y - avgY;
+
+            double distance = Math.Sqrt(dX * dX + dY * dY);
+            return distance <= 8;
+        }
+
+        public override void ReplaceInternalParameters(Dictionary<string, object> parameters)
+        {
+            if (parameters.Keys.Contains("Red") && parameters.Keys.Contains("Green") && parameters.Keys.Contains("Blue") && parameters.Keys.Contains("Alpha"))
+            {
+                if (parameters.Keys.Contains("Colour"))
+                {
+                    parameters["Colour"] = new SKColor(
+                        (byte)parameters["Red"],
+                        (byte)parameters["Green"],
+                        (byte)parameters["Blue"],
+                        (byte)parameters["Alpha"]
+                        );
+                }
+                else
+                {
+                    parameters.Add("Colour", new SKColor(
+                        (byte)parameters["Red"],
+                        (byte)parameters["Green"],
+                        (byte)parameters["Blue"],
+                        (byte)parameters["Alpha"]
+                        ));
+                }
+            }
+            EditInternalParameters(parameters);
+        }
+
+        public override Dictionary<string, object> GetEditableParameters()
+        {
+            try
+            {
+                return new Dictionary<string, object>
+                {
+                    { "X1", X1 },
+                    { "Y1", Y1 },
+                    { "X2", X2 },
+                    { "Y2", Y2 },
+                    { "BondType", (int)TypeOfBond },
+                    { "Subtype", (int)BondSubtype },
+                    { "Thickness", Thickness },
+                    { "Red", Colour.Red },
+                    { "Green", Colour.Green },
+                    { "Blue", Colour.Blue },
+                    { "Alpha", Colour.Alpha },
+                    { "AnchorID1", AnchorID1 },
+                    { "AnchorID2", AnchorID2 }
+                };
+            }
+            catch (Exception e)
+            {
+                // If some error occurs, please log.
+                ErrorLogger.ShowErrorMessageBox(e);
+                return null;
+            }
         }
     }
 }

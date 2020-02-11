@@ -1,0 +1,14 @@
+﻿[
+  {
+    "Header": "About",
+    "Info": [ "ChemNotation is a molecule diagram drawing program created as a computing project. It was created in the space of about six months. Its primary objective is to provide some of the features in commercial programs of the same type in an accessible, open-source package.\r\n", "Find us in GitHub at Shots243/ChemNotation." ]
+  },
+  {
+    "Header": "Basic Usage",
+    "Info": [ "Press any of the left-hand side buttons in order to select the tool. Click on the diagram view to use the tool. Some tools may open an interactable window.\r\n", "The tools are as follows:\r\n", "Select - Select an object and edit its properties.", "Atom - Select an element and place it on the diagram.", "Carbon - Place a carbon atom in the diagram.", "Nitrogen - Place a nitrogen atom in the diagram.", "Oxygen - Place an oxygen atom in the diagram.", "Hydrogen - Place a hydrogen atom in the diagram.", "Single Bond - Place a single bond. You may click on atoms in order to bind a bond to the atom instead of having it be free-floating.", "Double Bond - Place a double bond.", "Triple Bond - Place a triple bond.", "Aromatic Bond - Place an aromatic bond.", "Line - Draw a straight line.", "Curve - Draw a curve using 4 points.", "Straight Arrow - Draw a straight single-ended arrow.", "Curved Arrow - Draw a single-ended curved arrow using 4 points.", "Positive Charge - Adds +1 to the charge of an atom or ion.", "Negative Charge - Adds -1 to the charge of an atom or ion.", "Sharp Line - Places a sharp-cornered line. Left click to place a point, right click to place the last point and close the arrow.", "Sharp Arrow- Place a sharp-cornered arrow. Left click to place a point, right click to place the last point and close the arrow.", "Text - Place an editable text object.", "Quick Export - Opens the save dialogue." ]
+  },
+  {
+    "Header": "Saving",
+    "Info": [ "It is possible to save an image of your diagram after you finish drawing and editing it. Go to the drop-down menu on the top of the main drawing window, press File then Save. A file dialogue will open, which will allow you to pick a location to save the file and the filename to save it as." ]
+  }
+]

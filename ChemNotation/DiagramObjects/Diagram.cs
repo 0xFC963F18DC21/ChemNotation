@@ -34,7 +34,19 @@ namespace ChemNotation.DiagramObjects
         }
 
         // List of object instances inside the diagram.
-        protected List<DiagramObject> DiagramObjects { get; set; }
+        private List<DiagramObject> DiagramObjects { get; set; }
+
+        // Get a shallow copy of the objects.
+        public DiagramObject[] Objects
+        {
+            get
+            {
+                DiagramObject[] arr = new DiagramObject[DiagramObjects.Count];
+                DiagramObjects.CopyTo(arr);
+
+                return arr;
+            }
+        }
 
         /// <summary>
         /// Creates a new blank diagram.
@@ -44,6 +56,7 @@ namespace ChemNotation.DiagramObjects
             Metadata = new SKImageInfo(width, height);
             Log.LogMessageGeneral("New diagram created.");
             DiagramObjects = new List<DiagramObject>();
+            UpdateView();
         }
 
         /// <summary>
@@ -66,6 +79,30 @@ namespace ChemNotation.DiagramObjects
             {
                 Log.LogMessageGeneral("Diagram cleared pre-update.");
                 DiagramSurface.Canvas.Clear(SKColors.White);
+            }
+
+            if (GridSettingForm.Settings.GridWidth > 0 && GridSettingForm.Settings.GridHeight > 0)
+            {
+                int w = (-GridSettingForm.Settings.GridWidth * 2) + GridSettingForm.Settings.GridXOffset % GridSettingForm.Settings.GridWidth;
+                int h = (-GridSettingForm.Settings.GridHeight * 2) + GridSettingForm.Settings.GridYOffset % GridSettingForm.Settings.GridHeight;
+
+                SKPaint linePaint = new SKPaint
+                {
+                    StrokeWidth = 2,
+                    Color = new SKColor(0, 0, 0, 16)
+                };
+
+                while (w < Metadata.Value.Width + GridSettingForm.Settings.GridXOffset)
+                {
+                    w += GridSettingForm.Settings.GridWidth;
+                    DiagramSurface.Canvas.DrawLine(w, 0, w, Metadata.Value.Height, linePaint);
+                }
+
+                while (h < Metadata.Value.Height + GridSettingForm.Settings.GridYOffset)
+                {
+                    h += GridSettingForm.Settings.GridHeight;
+                    DiagramSurface.Canvas.DrawLine(0, h, Metadata.Value.Width, h, linePaint);
+                }
             }
 
             IEnumerable<DiagramObject> bonds =
@@ -128,6 +165,22 @@ namespace ChemNotation.DiagramObjects
             }
 
             DiagramObjects.Add(obj);
+        }
+
+        /// <summary>
+        /// Removes an object with the specified ID.
+        /// </summary>
+        /// <param name="id">ID number of object in diagram.</param>
+        public DiagramObject GetDiagramObject(int id)
+        {
+            for (int i = DiagramObjects.Count - 1; i >= 0; i--)
+            {
+                if (DiagramObjects[i].DiagramID == id)
+                {
+                    return DiagramObjects[i];
+                }
+            }
+            return null;
         }
 
         /// <summary>
