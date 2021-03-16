@@ -22,11 +22,13 @@ namespace ChemNotation
 
         private EditingForm()
         {
+            // This argumentless constructor should not be used.
             InitializeComponent();
         }
 
         public EditingForm(DiagramObject obj) : this()
         {
+            // Grab the properties of the object.
             Properties = new Dictionary<string, object>();
             var p = obj.GetEditableParameters();
             Editable = obj;
